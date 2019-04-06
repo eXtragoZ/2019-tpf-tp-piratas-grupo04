@@ -8,10 +8,8 @@ data Tesoro = Tesoro {
     valor :: Double
 } deriving (Show)
 
-frascoArena = Tesoro "frasco de arena" 0
-
 jackSparrow = Pirata "Jack Sparrow" [
-    frascoArena, 
+    Tesoro "frasco de arena" 0, 
     Tesoro "Brujula que apunta a lo que mas deseas" 1000
     ]
 
@@ -21,7 +19,7 @@ davidJones = Pirata "David Jones" [
 
 anneBonny = Pirata "Anne Bonny" [
     Tesoro "Doblones" 100,
-    frascoArena
+    Tesoro "frasco de arena" 1
     ]
 
 piratas = [jackSparrow,davidJones,anneBonny]  
@@ -47,36 +45,19 @@ pirataEsAfortunado = (>10000).valorTotalTesoros
 mismoTesoroDistintoValor :: Tesoro -> Tesoro -> Bool
 mismoTesoroDistintoValor tesoro1 tesoro2 = (nombreTesoro tesoro1 == nombreTesoro tesoro2) && not (valor tesoro1 == valor tesoro2)
 
-mismoTesoroDistintoValorEnOtroBotin :: Tesoro -> [Tesoro] -> Bool
-mismoTesoroDistintoValorEnOtroBotin tesoro [] = False
-mismoTesoroDistintoValorEnOtroBotin tesoro1 (tesoro2:tesoros2)
-    | mismoTesoroDistintoValor tesoro1 tesoro2 = True
-    | otherwise = mismoTesoroDistintoValorEnOtroBotin tesoro1 tesoros2
+mismoTesoroDistintoValorEnBotin :: [Tesoro] -> Tesoro -> Bool
+mismoTesoroDistintoValorEnBotin tesoros tesoro = any (mismoTesoroDistintoValor tesoro) tesoros
 
-mismosTesorosEnOtroBotin :: [Tesoro] -> [Tesoro] -> Bool
-mismosTesorosEnOtroBotin [] [] = False
-mismosTesorosEnOtroBotin [] tesoros2 = False
-mismosTesorosEnOtroBotin (tesoro1:tesoros1) [] = False
-mismosTesorosEnOtroBotin (tesoro1:tesoros1) tesoros2
-    | mismoTesoroDistintoValorEnOtroBotin tesoro1 tesoros2 = True
-    | otherwise = mismosTesorosEnOtroBotin tesoros1 tesoros2
+mismosTesorosDistintoValorEnOtroBotin :: [Tesoro] -> [Tesoro] -> Bool
+mismosTesorosDistintoValorEnOtroBotin tesoros1 tesoros2 = any (mismoTesoroDistintoValorEnBotin tesoros1) tesoros2
 
-mismosTesorosEnAmbosBotines :: [Tesoro] -> [Tesoro] -> Bool
-mismosTesorosEnAmbosBotines [] [] = False
-mismosTesorosEnAmbosBotines [] tesoro2 = False
-mismosTesorosEnAmbosBotines tesoros1 [] = False
-mismosTesorosEnAmbosBotines tesoros1 tesoros2 = mismosTesorosEnOtroBotin tesoros1 tesoros2 || mismosTesorosEnOtroBotin tesoros2 tesoros1
-
-pirataConMismoTesoroDistintoValorQueOtrosPiratas :: Pirata -> [Pirata] -> Bool
-pirataConMismoTesoroDistintoValorQueOtrosPiratas pirata [] = False
-pirataConMismoTesoroDistintoValorQueOtrosPiratas pirata1 (pirata2:piratas)
-    | mismosTesorosEnAmbosBotines (botin pirata1) (botin pirata2) = True
-    | otherwise = pirataConMismoTesoroDistintoValorQueOtrosPiratas pirata1 piratas
+pirataConMismoTesoroDistintoValorQueOtroPirata :: Pirata -> Pirata -> Bool
+pirataConMismoTesoroDistintoValorQueOtroPirata pirata1 pirata2 = mismosTesorosDistintoValorEnOtroBotin (botin pirata1) (botin pirata2)
 
 piratasConMismoTesoroDistintoValor :: [Pirata] -> Bool
 piratasConMismoTesoroDistintoValor [] = False
 piratasConMismoTesoroDistintoValor (pirata:piratas)
-    | pirataConMismoTesoroDistintoValorQueOtrosPiratas pirata piratas = True
+    | any (pirataConMismoTesoroDistintoValorQueOtroPirata pirata) piratas = True
     | otherwise = piratasConMismoTesoroDistintoValor piratas
 
 -- El valor del tesoro más valioso de un pirata.

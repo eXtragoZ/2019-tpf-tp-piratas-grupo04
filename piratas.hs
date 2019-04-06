@@ -8,6 +8,8 @@ data Tesoro = Tesoro {
     valor :: Double
 } deriving (Show)
 
+frascoArena = Tesoro "frasco de arena" 5
+
 jackSparrow = Pirata "Jack Sparrow" [
     Tesoro "frasco de arena" 0, 
     Tesoro "Brujula que apunta a lo que mas deseas" 1000
@@ -67,20 +69,18 @@ tesoroMasValiosoDeUnPirata pirata = maximum (valoresTesorosPirata pirata)
 
 -- Como queda el pirata luego de adquirir un nuevo tesoro
 pirataAdquiereNuevoTesoro :: Pirata -> Tesoro -> Pirata
-pirataAdquiereNuevoTesoro pirata tesoro = Pirata (nombrePirata pirata) ((botin pirata) ++ [tesoro])
+pirataAdquiereNuevoTesoro pirata tesoro = pirata {botin = tesoro:(botin pirata)}
 
 -- Como queda el pirata luego de perder todos los tesoros valiosos, que son los que tienen un valor mayor a 100
 tesorosNoValiosos :: [Tesoro] -> [Tesoro]
-tesorosNoValiosos [] = []
-tesorosNoValiosos tesoros = filter (\x -> valor x < 100) tesoros
+tesorosNoValiosos = filter (\tesoro -> valor tesoro < 100)
 
 pirataPierdeTesorosValiosos :: Pirata -> Pirata
-pirataPierdeTesorosValiosos pirata = Pirata (nombrePirata pirata) (tesorosNoValiosos (botin pirata))
+pirataPierdeTesorosValiosos pirata = pirata {botin = tesorosNoValiosos (botin pirata)}
 
 -- Como queda el pirata luego de perder todos los tesoros con un nombre dado
 tesoroNoCondiceConNombre :: [Tesoro] -> String -> [Tesoro]
-tesoroNoCondiceConNombre [] x = []
-tesoroNoCondiceConNombre tesoros x = filter (\y -> not (nombreTesoro y == x)) tesoros
+tesoroNoCondiceConNombre tesoros nombre = filter (\tesoro -> not (nombreTesoro tesoro == nombre)) tesoros
 
 pirataPierdeTesorosConNombre :: Pirata -> String -> Pirata
-pirataPierdeTesorosConNombre pirata x = Pirata (nombrePirata pirata) (tesoroNoCondiceConNombre (botin pirata) x)
+pirataPierdeTesorosConNombre pirata nombre = pirata {botin = (tesoroNoCondiceConNombre (botin pirata) nombre)}

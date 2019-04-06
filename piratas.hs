@@ -1,3 +1,5 @@
+import Text.Show.Functions
+
 data Pirata = Pirata {
     nombrePirata :: String,
     botin :: [Tesoro]
@@ -16,21 +18,13 @@ frascoArena2 = Tesoro "frasco de arena" 1
 oro = Tesoro "oro" 100
 sombrero = Tesoro "sombrero" 20
 
-jackSparrow = Pirata "Jack Sparrow" [
-    frascoArena, 
-    brujula
-    ]
+jackSparrow = Pirata "Jack Sparrow" [frascoArena, brujula]
 
-davidJones = Pirata "David Jones" [
-    cajitaMusical
-    ]
+davidJones = Pirata "David Jones" [cajitaMusical]
 
-anneBonny = Pirata "Anne Bonny" [
-    doblones,
-    frascoArena2
-    ]
+anneBonny = Pirata "Anne Bonny" [doblones, frascoArena2]
 
-piratas = [jackSparrow,davidJones,anneBonny]  
+piratas = [jackSparrow, davidJones, anneBonny]
 
 -- La cantidad de tesoros de un pirata
 
@@ -121,6 +115,29 @@ saquearValiosoYSombrero :: Tesoro -> Bool
 saquearValiosoYSombrero = tesoroEsSaqueable [tesoroEsValioso, tesoroConNombre "sombrero"]
 
 saquear :: Pirata -> (Tesoro -> Bool) -> Tesoro -> Pirata
-saquear pirata cumpleFormaDeSaquear tesoro
-        | cumpleFormaDeSaquear tesoro = pirataAdquiereNuevoTesoro pirata tesoro
+saquear pirata formaDeSaquear tesoro
+        | formaDeSaquear tesoro = pirataAdquiereNuevoTesoro pirata tesoro
         | otherwise = pirata
+
+-- Navegando los siete mares
+
+data Barco = Barco {
+    nombreBarco :: String,
+    tripulacion :: [Pirata],
+    formaDeSaquear :: Tesoro -> Bool
+} deriving (Show)
+
+perlaNegra = Barco "Perla Negra" [jackSparrow, anneBonny] saquearValiosoYSombrero
+
+moneda = Tesoro "moneda del cofre muerto" 100
+espada = Tesoro "espada de hierro" 50
+
+elizabethSwann = Pirata "Elizabeth Swann" [moneda, espada]
+
+--Un pirata se incorpora a la tripulación de un barco
+barcoIncorporaTripulante :: Barco -> Pirata -> Barco
+barcoIncorporaTripulante barco pirata = barco {tripulacion = pirata:(tripulacion barco)}
+
+--Un pirata abandona la tripulación de un barco
+barcoAbandonaTripulante :: Barco -> Pirata -> Barco
+barcoAbandonaTripulante barco pirata = barco {tripulacion = filter(\tipulante -> nombrePirata tipulante /= nombrePirata pirata)(tripulacion barco)}

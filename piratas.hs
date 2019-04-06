@@ -8,20 +8,26 @@ data Tesoro = Tesoro {
     valor :: Double
 } deriving (Show)
 
-frascoArena = Tesoro "frasco de arena" 5
+frascoArena = Tesoro "frasco de arena" 0
+brujula = Tesoro "Brujula que apunta a lo que mas deseas" 1000
+cajitaMusical = Tesoro "Cajita musical" 1
+doblones = Tesoro "Doblones" 100
+frascoArena2 = Tesoro "frasco de arena" 1
+oro = Tesoro "oro" 100
+sombrero = Tesoro "sombrero" 20
 
 jackSparrow = Pirata "Jack Sparrow" [
-    Tesoro "frasco de arena" 0, 
-    Tesoro "Brujula que apunta a lo que mas deseas" 1000
+    frascoArena, 
+    brujula
     ]
 
 davidJones = Pirata "David Jones" [
-    Tesoro "Cajita musical" 1
+    cajitaMusical
     ]
 
 anneBonny = Pirata "Anne Bonny" [
-    Tesoro "Doblones" 100,
-    Tesoro "frasco de arena" 1
+    doblones,
+    frascoArena2
     ]
 
 piratas = [jackSparrow,davidJones,anneBonny]  
@@ -72,15 +78,49 @@ pirataAdquiereNuevoTesoro :: Pirata -> Tesoro -> Pirata
 pirataAdquiereNuevoTesoro pirata tesoro = pirata {botin = tesoro:(botin pirata)}
 
 -- Como queda el pirata luego de perder todos los tesoros valiosos, que son los que tienen un valor mayor a 100
+tesoroEsValioso :: Tesoro -> Bool
+tesoroEsValioso tesoro = valor tesoro >= 100
+
 tesorosNoValiosos :: [Tesoro] -> [Tesoro]
-tesorosNoValiosos = filter (\tesoro -> valor tesoro < 100)
+tesorosNoValiosos = filter (not.tesoroEsValioso)
 
 pirataPierdeTesorosValiosos :: Pirata -> Pirata
 pirataPierdeTesorosValiosos pirata = pirata {botin = tesorosNoValiosos (botin pirata)}
 
 -- Como queda el pirata luego de perder todos los tesoros con un nombre dado
+tesoroConNombre :: String -> Tesoro -> Bool
+tesoroConNombre nombre tesoro = (nombreTesoro tesoro) == nombre
+
 tesoroNoCondiceConNombre :: [Tesoro] -> String -> [Tesoro]
-tesoroNoCondiceConNombre tesoros nombre = filter (\tesoro -> not (nombreTesoro tesoro == nombre)) tesoros
+tesoroNoCondiceConNombre tesoros nombre = filter (not.(tesoroConNombre nombre)) tesoros
 
 pirataPierdeTesorosConNombre :: Pirata -> String -> Pirata
 pirataPierdeTesorosConNombre pirata nombre = pirata {botin = (tesoroNoCondiceConNombre (botin pirata) nombre)}
+
+
+--Temporada de saqueos
+
+-- Sólo los tesoros valiosos.
+-- tesoroEsValioso :: Tesoro -> Bool
+
+-- Tesoros con objetos específicos, es decir, sólo tesoros cuyo nombre sea una palabra clave.
+-- tesoroConNombre :: String -> Tesoro -> Bool
+
+-- Existen los piratas con corazón que no saquean nada.
+noSaqueaTesoro :: Tesoro -> Bool
+noSaqueaTesoro tesoro = False
+
+-- Existe una forma más compleja que consiste en una conjunción de las anteriores. Esto significa que se quedan con los tesoros que cumplan al menos una de entre un conjunto de maneras se saquear.
+tesoroEsSaqueable :: [(Tesoro -> Bool)] -> Tesoro -> Bool
+tesoroEsSaqueable formasDeSaquear tesoro = any($tesoro) formasDeSaquear
+
+saquearOro :: Tesoro -> Bool
+saquearOro = tesoroConNombre "oro"
+
+saquearValiosoYSombrero :: Tesoro -> Bool
+saquearValiosoYSombrero = tesoroEsSaqueable [tesoroEsValioso, tesoroConNombre "sombrero"]
+
+saquear :: Pirata -> (Tesoro -> Bool) -> Tesoro -> Pirata
+saquear pirata cumpleFormaDeSaquear tesoro
+        | cumpleFormaDeSaquear tesoro = pirataAdquiereNuevoTesoro pirata tesoro
+        | otherwise = pirata

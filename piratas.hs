@@ -11,7 +11,7 @@ data Tesoro = Tesoro {
 } deriving (Show)
 
 frascoArena = Tesoro "frasco de arena" 0
-brujula = Tesoro "Brujula que apunta a lo que mas deseas" 1000
+brujula = Tesoro "Brujula que apunta a lo que mas deseas" 10000
 cajitaMusical = Tesoro "Cajita musical" 1
 doblones = Tesoro "Doblones" 100
 frascoArena2 = Tesoro "frasco de arena" 1
@@ -131,8 +131,10 @@ perlaNegra = Barco "Perla Negra" [jackSparrow, anneBonny] saquearValiosoYSombrer
 
 moneda = Tesoro "moneda del cofre muerto" 100
 espada = Tesoro "espada de hierro" 50
+cuchillo = Tesoro "cuchillo del padre" 5
 
 elizabethSwann = Pirata "Elizabeth Swann" [moneda, espada]
+willTurner = Pirata "Will Turner" [cuchillo]
 
 --Un pirata se incorpora a la tripulación de un barco
 barcoIncorporaTripulante :: Barco -> Pirata -> Barco
@@ -141,3 +143,6 @@ barcoIncorporaTripulante barco pirata = barco {tripulacion = pirata:(tripulacion
 --Un pirata abandona la tripulación de un barco
 barcoAbandonaTripulante :: Barco -> Pirata -> Barco
 barcoAbandonaTripulante barco pirata = barco {tripulacion = filter(\tipulante -> nombrePirata tipulante /= nombrePirata pirata)(tripulacion barco)}
+
+
+

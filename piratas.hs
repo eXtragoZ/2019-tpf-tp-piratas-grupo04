@@ -144,5 +144,17 @@ barcoIncorporaTripulante barco pirata = barco {tripulacion = pirata:(tripulacion
 barcoAbandonaTripulante :: Barco -> Pirata -> Barco
 barcoAbandonaTripulante barco pirata = barco {tripulacion = filter(\tipulante -> nombrePirata tipulante /= nombrePirata pirata)(tripulacion barco)}
 
+data Isla = Isla {
+    nombreIsla :: String,
+    elementoTipico :: Tesoro
+} deriving (Show)
+
+botellaRon = Tesoro "Botella de Ron" 25
+
+islaTortuga = Isla "Isla Tortuga" frascoArena2
+islaDelRon = Isla "Isla del Ron" botellaRon
+
+anclarEnIslaDeshabitada :: Barco -> Isla -> Barco
+anclarEnIslaDeshabitada barco isla = barco { tripulacion = map (`pirataAdquiereNuevoTesoro` elementoTipico isla) (tripulacion barco) }
 
 

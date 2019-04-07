@@ -157,4 +157,19 @@ islaDelRon = Isla "Isla del Ron" botellaRon
 anclarEnIslaDeshabitada :: Barco -> Isla -> Barco
 anclarEnIslaDeshabitada barco isla = barco { tripulacion = map (`pirataAdquiereNuevoTesoro` elementoTipico isla) (tripulacion barco) }
 
+data Ciudad = Ciudad {
+    nombre :: String,
+    tesoros :: [Tesoro]
+} deriving (Show)
 
+marDelPlata = Ciudad "Mar del Plata" [botellaRon, moneda, doblones, oro, sombrero]
+
+piratasSaqueanTesoros :: (Tesoro -> Bool) -> [Pirata] -> [Tesoro] -> [Pirata]
+piratasSaqueanTesoros formaDeSaquear [] [] = []
+piratasSaqueanTesoros formaDeSaquear [] (tesoro:restoTesoros) = []
+piratasSaqueanTesoros formaDeSaquear (pirata:restoPiratas) [] = []
+piratasSaqueanTesoros formaDeSaquear (pirata:restoPiratas) (tesoro:restoTesoros) 
+        = saquear pirata formaDeSaquear tesoro : piratasSaqueanTesoros formaDeSaquear restoPiratas restoTesoros
+
+barcoSaqueaCiudad :: Barco -> Ciudad -> Barco
+barcoSaqueaCiudad barco ciudad = barco { tripulacion = piratasSaqueanTesoros (formaDeSaquear barco) (tripulacion barco) (tesoros ciudad) }

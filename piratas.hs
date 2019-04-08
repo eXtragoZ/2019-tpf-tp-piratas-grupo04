@@ -173,3 +173,29 @@ piratasSaqueanTesoros formaDeSaquear (pirata:restoPiratas) (tesoro:restoTesoros)
 
 barcoSaqueaCiudad :: Barco -> Ciudad -> Barco
 barcoSaqueaCiudad barco ciudad = barco { tripulacion = piratasSaqueanTesoros (formaDeSaquear barco) (tripulacion barco) (tesoros ciudad) }
+
+------ Abordar otro barco en altamar:
+-- Cuando un barco aborda a otro que se encuentra en altamar, los piratas atacan uno a uno a los del barco abordado,
+-- robando sus tesoros valiosos, y vuelven a su barco
+
+tesorosValiosos :: [Tesoro] -> [Tesoro]
+tesorosValiosos = filter (tesoroEsValioso)
+
+pirataAdquiereNuevosTesoros :: Pirata -> [Tesoro] -> Pirata
+pirataAdquiereNuevosTesoros pirata tesoros = pirata { botin = tesoros ++ (botin pirata)}
+
+robarTesorosValiosos :: Pirata -> Pirata -> Pirata
+robarTesorosValiosos pirata pirataRobado = pirataAdquiereNuevosTesoros pirata (tesorosValiosos (botin pirataRobado))
+
+piratasRobanTesorosValiosos :: [Pirata] -> [Pirata] -> [Pirata]
+piratasRobanTesorosValiosos [] [] = []
+piratasRobanTesorosValiosos piratas [] = []
+piratasRobanTesorosValiosos [] piratasRobados = []
+piratasRobanTesorosValiosos (pirata:restoPiratas) (pirataRobado:restoRobados) 
+        = robarTesorosValiosos pirata pirataRobado : piratasRobanTesorosValiosos restoPiratas restoRobados
+
+barcoAbordaOtroBarco :: Barco -> Barco -> Barco
+barcoAbordaOtroBarco barco barcoAbordado = barco { tripulacion = piratasRobanTesorosValiosos (tripulacion barco) (tripulacion barcoAbordado)}
+        
+holandesErrante = Barco "Holandes Errante" [davidJones] saquearValiosoYSombrero
+

@@ -10,22 +10,6 @@ data Tesoro = Tesoro {
     valor :: Double
 } deriving (Show)
 
-frascoArena = Tesoro "frasco de arena" 0
-brujula = Tesoro "Brujula que apunta a lo que mas deseas" 10000
-cajitaMusical = Tesoro "Cajita musical" 1
-doblones = Tesoro "Doblones" 100
-frascoArena2 = Tesoro "frasco de arena" 1
-oro = Tesoro "oro" 100
-sombrero = Tesoro "sombrero" 20
-
-jackSparrow = Pirata "Jack Sparrow" [frascoArena, brujula]
-
-davidJones = Pirata "David Jones" [cajitaMusical]
-
-anneBonny = Pirata "Anne Bonny" [doblones, frascoArena2]
-
-piratas = [jackSparrow, davidJones, anneBonny]
-
 -- La cantidad de tesoros de un pirata
 
 cantidadTesorosPirata :: Pirata -> Int
@@ -127,15 +111,6 @@ data Barco = Barco {
     formaDeSaquear :: Tesoro -> Bool
 } deriving (Show)
 
-perlaNegra = Barco "Perla Negra" [jackSparrow, anneBonny] saquearValiosoYSombrero
-
-moneda = Tesoro "moneda del cofre muerto" 100
-espada = Tesoro "espada de hierro" 50
-cuchillo = Tesoro "cuchillo del padre" 5
-
-elizabethSwann = Pirata "Elizabeth Swann" [moneda, espada]
-willTurner = Pirata "Will Turner" [cuchillo]
-
 --Un pirata se incorpora a la tripulación de un barco
 barcoIncorporaTripulante :: Barco -> Pirata -> Barco
 barcoIncorporaTripulante barco pirata = barco {tripulacion = pirata:(tripulacion barco)}
@@ -149,11 +124,6 @@ data Isla = Isla {
     elementoTipico :: Tesoro
 } deriving (Show)
 
-botellaRon = Tesoro "Botella de Ron" 25
-
-islaTortuga = Isla "Isla Tortuga" frascoArena2
-islaDelRon = Isla "Isla del Ron" botellaRon
-
 anclarEnIslaDeshabitada :: Barco -> Isla -> Barco
 anclarEnIslaDeshabitada barco isla = barco { tripulacion = map (`pirataAdquiereNuevoTesoro` elementoTipico isla) (tripulacion barco) }
 
@@ -161,8 +131,6 @@ data Ciudad = Ciudad {
     nombre :: String,
     tesoros :: [Tesoro]
 } deriving (Show)
-
-marDelPlata = Ciudad "Mar del Plata" [botellaRon, moneda, doblones, oro, sombrero]
 
 piratasSaqueanTesoros :: (Tesoro -> Bool) -> [Pirata] -> [Tesoro] -> [Pirata]
 piratasSaqueanTesoros formaDeSaquear [] [] = []
@@ -196,6 +164,52 @@ piratasRobanTesorosValiosos (pirata:restoPiratas) (pirataRobado:restoRobados)
 
 barcoAbordaOtroBarco :: Barco -> Barco -> Barco
 barcoAbordaOtroBarco barco barcoAbordado = barco { tripulacion = piratasRobanTesorosValiosos (tripulacion barco) (tripulacion barcoAbordado)}
-        
-holandesErrante = Barco "Holandes Errante" [davidJones] saquearValiosoYSombrero
+    
 
+----- Datos para peliculas:
+
+frascoArena = Tesoro "frasco de arena" 0
+brujula = Tesoro "Brujula que apunta a lo que mas deseas" 10000
+cajitaMusical = Tesoro "Cajita musical" 1
+doblones = Tesoro "Doblones" 100
+frascoArena2 = Tesoro "frasco de arena" 1
+oro = Tesoro "oro" 100
+sombrero = Tesoro "sombrero" 20
+moneda = Tesoro "moneda del cofre muerto" 100
+espada = Tesoro "espada de hierro" 50
+cuchillo = Tesoro "cuchillo del padre" 5
+botellaRon = Tesoro "Botella de Ron" 25
+joyas = Tesoro "Set de joyas" 75
+joyas2 = Tesoro "Set de joyas" 50
+bolsonMoneda = Tesoro "Bolson de monedas" 90
+bolsonMoneda2 = Tesoro "Bolson de monedas" 70
+
+jackSparrow = Pirata "Jack Sparrow" [frascoArena, brujula]
+anneBonny = Pirata "Anne Bonny" [doblones, frascoArena2]
+elizabethSwann = Pirata "Elizabeth Swann" [moneda, espada]
+willTurner = Pirata "Will Turner" [cuchillo]
+
+perlaNegra = Barco "Perla Negra" [jackSparrow, anneBonny, elizabethSwann, willTurner] saquearValiosoYSombrero
+
+davidJones = Pirata "David Jones" [cajitaMusical, oro, sombrero]
+maccus = Pirata "Maccus" [frascoArena]
+clacker = Pirata "Clacker" [oro]
+jimmyLegs = Pirata "Jimmy Legs" [moneda]
+
+holandesErrante = Barco "Holandes Errante" [davidJones, maccus, clacker, jimmyLegs] saquearOro 
+
+islaTortuga = Isla "Isla Tortuga" frascoArena2
+islaDelRon = Isla "Isla del Ron" botellaRon
+
+portRoyal = Ciudad "Port Royal" [joyas, bolsonMoneda, joyas2, espada, bolsonMoneda2, joyas, joyas2]
+carmenPatagones = Ciudad "Carmen de Patagones" [espada, doblones, doblones, oro]
+
+------Pelicula ejemplo:
+
+--La tripulación del Perla Negra desembarca en la IslaDelRon y todos se llevan una botella.
+
+--El Perla Negra ataca Port Royal, donde hay muchos tesoros.
+
+--El Holandes Errante pasa por la Isla Tortuga y luego hace un largo viaje para atacar Carmen de Patagones, donde hay pocos tesoros.
+
+--El Perla Negra aborda al Holandes Errante

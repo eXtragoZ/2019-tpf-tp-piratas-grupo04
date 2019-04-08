@@ -119,6 +119,7 @@ barcoIncorporaTripulante barco pirata = barco {tripulacion = pirata:(tripulacion
 barcoAbandonaTripulante :: Barco -> Pirata -> Barco
 barcoAbandonaTripulante barco pirata = barco {tripulacion = filter(\tipulante -> nombrePirata tipulante /= nombrePirata pirata)(tripulacion barco)}
 
+--Un barco ancla en Isla Deshabitada
 data Isla = Isla {
     nombreIsla :: String,
     elementoTipico :: Tesoro
@@ -127,6 +128,7 @@ data Isla = Isla {
 anclarEnIslaDeshabitada :: Barco -> Isla -> Barco
 anclarEnIslaDeshabitada barco isla = barco { tripulacion = map (`pirataAdquiereNuevoTesoro` elementoTipico isla) (tripulacion barco) }
 
+--Un barco saquea una ciudad
 data Ciudad = Ciudad {
     nombre :: String,
     tesoros :: [Tesoro]
@@ -142,7 +144,7 @@ piratasSaqueanTesoros formaDeSaquear (pirata:restoPiratas) (tesoro:restoTesoros)
 barcoSaqueaCiudad :: Barco -> Ciudad -> Barco
 barcoSaqueaCiudad barco ciudad = barco { tripulacion = piratasSaqueanTesoros (formaDeSaquear barco) (tripulacion barco) (tesoros ciudad) }
 
------- Abordar otro barco en altamar:
+--Un barco aborda otro en altamar:
 -- Cuando un barco aborda a otro que se encuentra en altamar, los piratas atacan uno a uno a los del barco abordado,
 -- robando sus tesoros valiosos, y vuelven a su barco
 
@@ -194,7 +196,9 @@ perlaNegra = Barco "Perla Negra" [jackSparrow, anneBonny, elizabethSwann, willTu
 davidJones = Pirata "David Jones" [cajitaMusical, oro, sombrero]
 maccus = Pirata "Maccus" [frascoArena]
 clacker = Pirata "Clacker" [oro]
-jimmyLegs = Pirata "Jimmy Legs" [moneda]
+jimmyLegs = Pirata "Jimmy Legs" [botellaRon]
+koleniko = Pirata "Koleniko" [espada]
+palifico = Pirata "Palifico" [frascoArena]
 
 holandesErrante = Barco "Holandes Errante" [davidJones, maccus, clacker, jimmyLegs] saquearOro 
 

@@ -13,7 +13,8 @@ data Tesoro = Tesoro {
 -- La cantidad de tesoros de un pirata
 
 cantidadTesorosPirata :: Pirata -> Int
-cantidadTesorosPirata pirata = length (botin pirata)
+cantidadTesorosPirata = length.botin
+-- length.botin
 
 valoresTesorosPirata :: Pirata -> [Double]
 valoresTesorosPirata pirata = map valor (botin pirata)
@@ -29,7 +30,7 @@ pirataEsAfortunado = (>10000).valorTotalTesoros
 -- Si dos piratas tienen un mismo tesoro, pero de valor diferente
 
 mismoTesoroDistintoValor :: Tesoro -> Tesoro -> Bool
-mismoTesoroDistintoValor tesoro1 tesoro2 = (nombreTesoro tesoro1 == nombreTesoro tesoro2) && not (valor tesoro1 == valor tesoro2)
+mismoTesoroDistintoValor tesoro1 tesoro2 = (nombreTesoro tesoro1 == nombreTesoro tesoro2) && (valor tesoro1 /= valor tesoro2)
 
 mismoTesoroDistintoValorEnBotin :: [Tesoro] -> Tesoro -> Bool
 mismoTesoroDistintoValorEnBotin tesoros tesoro = any (mismoTesoroDistintoValor tesoro) tesoros
@@ -40,6 +41,7 @@ mismosTesorosDistintoValorEnOtroBotin tesoros1 tesoros2 = any (mismoTesoroDistin
 pirataConMismoTesoroDistintoValorQueOtroPirata :: Pirata -> Pirata -> Bool
 pirataConMismoTesoroDistintoValorQueOtroPirata pirata1 pirata2 = mismosTesorosDistintoValorEnOtroBotin (botin pirata1) (botin pirata2)
 
+--esta de mas
 piratasConMismoTesoroDistintoValor :: [Pirata] -> Bool
 piratasConMismoTesoroDistintoValor [] = False
 piratasConMismoTesoroDistintoValor (pirata:piratas)
@@ -52,8 +54,8 @@ tesoroMasValiosoDeUnPirata :: Pirata -> Double
 tesoroMasValiosoDeUnPirata pirata = maximum (valoresTesorosPirata pirata)
 
 -- Como queda el pirata luego de adquirir un nuevo tesoro
-pirataAdquiereNuevoTesoro :: Pirata -> Tesoro -> Pirata
-pirataAdquiereNuevoTesoro pirata tesoro = pirata {botin = tesoro:(botin pirata)}
+pirataAdquiereNuevoTesoro :: Tesoro ->  Pirata -> Pirata
+pirataAdquiereNuevoTesoro tesoro pirata = pirata {botin = tesoro:(botin pirata)}
 
 -- Como queda el pirata luego de perder todos los tesoros valiosos, que son los que tienen un valor mayor a 100
 tesoroEsValioso :: Tesoro -> Bool
@@ -92,15 +94,17 @@ noSaqueaTesoro tesoro = False
 tesoroEsSaqueable :: [(Tesoro -> Bool)] -> Tesoro -> Bool
 tesoroEsSaqueable formasDeSaquear tesoro = any($tesoro) formasDeSaquear
 
-saquearOro :: Tesoro -> Bool
-saquearOro = tesoroConNombre "oro"
+--saquearOro :: Tesoro -> Bool
+--saquearOro = tesoroConNombre "oro" 
 
-saquearValiosoYSombrero :: Tesoro -> Bool
-saquearValiosoYSombrero = tesoroEsSaqueable [tesoroEsValioso, tesoroConNombre "sombrero"]
+--saquearValiosoYSombrero :: Tesoro -> Bool
+--saquearValiosoYSombrero = tesoroEsSaqueable [tesoroEsValioso, tesoroConNombre "sombrero"]
+
+type FormaDeSaqueo = Tesoro -> Bool 
 
 saquear :: Pirata -> (Tesoro -> Bool) -> Tesoro -> Pirata
 saquear pirata formaDeSaquear tesoro
-        | formaDeSaquear tesoro = pirataAdquiereNuevoTesoro pirata tesoro
+        | formaDeSaquear tesoro = pirataAdquiereNuevoTesoro tesoro pirata
         | otherwise = pirata
 
 -- Navegando los siete mares
@@ -118,6 +122,7 @@ barcoIncorporaTripulante barco pirata = barco {tripulacion = pirata:(tripulacion
 --Un pirata abandona la tripulación de un barco
 barcoAbandonaTripulante :: Barco -> Pirata -> Barco
 barcoAbandonaTripulante barco pirata = barco {tripulacion = filter(\tipulante -> nombrePirata tipulante /= nombrePirata pirata)(tripulacion barco)}
+-- delegar en otra funcion pirataConNombre
 
 --Un barco ancla en Isla Deshabitada
 data Isla = Isla {
@@ -126,7 +131,7 @@ data Isla = Isla {
 } deriving (Show)
 
 anclarEnIslaDeshabitada :: Barco -> Isla -> Barco
-anclarEnIslaDeshabitada barco isla = barco { tripulacion = map (`pirataAdquiereNuevoTesoro` elementoTipico isla) (tripulacion barco) }
+anclarEnIslaDeshabitada barco isla = barco { tripulacion = map (pirataAdquiereNuevoTesoro (elementoTipico isla)) (tripulacion barco) }
 
 --Un barco saquea una ciudad
 data Ciudad = Ciudad {

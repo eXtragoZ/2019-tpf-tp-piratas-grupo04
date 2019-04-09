@@ -181,10 +181,10 @@ moneda = Tesoro "moneda del cofre muerto" 100
 espada = Tesoro "espada de hierro" 50
 cuchillo = Tesoro "cuchillo del padre" 5
 botellaRon = Tesoro "Botella de Ron" 25
-joyas = Tesoro "Set de joyas" 75
-joyas2 = Tesoro "Set de joyas" 50
-bolsonMoneda = Tesoro "Bolson de monedas" 90
-bolsonMoneda2 = Tesoro "Bolson de monedas" 70
+joyas = Tesoro "Set de joyas" 175
+joyas2 = Tesoro "Set de joyas" 150
+bolsonMoneda = Tesoro "Bolson de monedas" 110
+bolsonMoneda2 = Tesoro "Bolson de monedas" 120
 
 jackSparrow = Pirata "Jack Sparrow" [frascoArena, brujula]
 anneBonny = Pirata "Anne Bonny" [doblones, frascoArena2]
@@ -200,20 +200,22 @@ jimmyLegs = Pirata "Jimmy Legs" [botellaRon]
 koleniko = Pirata "Koleniko" [espada]
 palifico = Pirata "Palifico" [frascoArena]
 
-holandesErrante = Barco "Holandes Errante" [davidJones, maccus, clacker, jimmyLegs] saquearOro 
+holandesErrante = Barco "Holandes Errante" [davidJones, maccus, clacker, jimmyLegs, koleniko, palifico] saquearOro 
 
 islaTortuga = Isla "Isla Tortuga" frascoArena2
 islaDelRon = Isla "Isla del Ron" botellaRon
 
 portRoyal = Ciudad "Port Royal" [joyas, bolsonMoneda, joyas2, espada, bolsonMoneda2, joyas, joyas2]
-carmenPatagones = Ciudad "Carmen de Patagones" [espada, doblones, doblones, oro]
+carmenPatagones = Ciudad "Carmen de Patagones" [espada, oro, oro, oro]
 
 ------Pelicula ejemplo:
 
 --La tripulación del Perla Negra desembarca en la IslaDelRon y todos se llevan una botella.
-
+ejemploEscena1 = anclarEnIslaDeshabitada perlaNegra islaDelRon
 --El Perla Negra ataca Port Royal, donde hay muchos tesoros.
-
+ejemploEscena2 = barcoSaqueaCiudad ejemploEscena1 portRoyal
 --El Holandes Errante pasa por la Isla Tortuga y luego hace un largo viaje para atacar Carmen de Patagones, donde hay pocos tesoros.
-
+ejemploEscena3 = anclarEnIslaDeshabitada holandesErrante islaTortuga
+ejemploEscena4 = barcoSaqueaCiudad ejemploEscena3 carmenPatagones
 --El Perla Negra aborda al Holandes Errante
+ejemploEscena5 = barcoAbordaOtroBarco ejemploEscena2 ejemploEscena4

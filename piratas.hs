@@ -157,11 +157,7 @@ robarTesorosValiosos :: Pirata -> Pirata -> Pirata
 robarTesorosValiosos pirata pirataRobado = pirataAdquiereNuevosTesoros pirata (tesorosValiosos (botin pirataRobado))
 
 piratasRobanTesorosValiosos :: [Pirata] -> [Pirata] -> [Pirata]
-piratasRobanTesorosValiosos [] [] = []
-piratasRobanTesorosValiosos piratas [] = []
-piratasRobanTesorosValiosos [] piratasRobados = []
-piratasRobanTesorosValiosos (pirata:restoPiratas) (pirataRobado:restoRobados) 
-        = robarTesorosValiosos pirata pirataRobado : piratasRobanTesorosValiosos restoPiratas restoRobados
+piratasRobanTesorosValiosos piratas piratasRobados = zipWith robarTesorosValiosos piratas piratasRobados ++ drop (length piratasRobados) piratas
 
 piratasPierdenTesorosValiosos :: [Pirata] -> [Pirata]
 piratasPierdenTesorosValiosos [] = []

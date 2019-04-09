@@ -164,9 +164,19 @@ piratasRobanTesorosValiosos [] piratasRobados = []
 piratasRobanTesorosValiosos (pirata:restoPiratas) (pirataRobado:restoRobados) 
         = robarTesorosValiosos pirata pirataRobado : piratasRobanTesorosValiosos restoPiratas restoRobados
 
+piratasPierdenTesorosValiosos :: [Pirata] -> [Pirata]
+piratasPierdenTesorosValiosos [] = []
+piratasPierdenTesorosValiosos (pirata:restoPiratas)
+        = pirataPierdeTesorosValiosos pirata : piratasPierdenTesorosValiosos restoPiratas
+
 barcoAbordaOtroBarco :: Barco -> Barco -> Barco
 barcoAbordaOtroBarco barco barcoAbordado = barco { tripulacion = piratasRobanTesorosValiosos (tripulacion barco) (tripulacion barcoAbordado)}
-    
+
+barcoAbordadoPorOtro :: Barco -> Barco -> Barco
+barcoAbordadoPorOtro barcoAbordado barco = barcoAbordado { tripulacion = piratasPierdenTesorosValiosos (tripulacion barcoAbordado) }
+
+abordamientoDeBarcoEnAltaMar :: Barco -> Barco -> (Barco,Barco)
+abordamientoDeBarcoEnAltaMar barco barcoAbordado = (barcoAbordaOtroBarco barco barcoAbordado,barcoAbordadoPorOtro barcoAbordado barco)
 
 ----- Datos para peliculas:
 
@@ -229,10 +239,10 @@ escena1 = barcoIncorporaTripulante perlaNegra jackSparrow
 escena2 = anclarEnIslaDeshabitada escena1 islaTortuga
 
 -- elholandes errante ve el perla negra anclado y lo ataca
-escena3 = barcoAbordaOtroBarco holandesErrante escena2
+escena3 = barcoAbordadoPorOtro escena2 holandesErrante
 
 -- el perla negra ataca portRoyal para recuperar tesoros
-escena4 = barcoSaqueaCiudad perlaNegra portRoyal
+escena4 = barcoSaqueaCiudad escena3 portRoyal
 
 -- Jack Sparrow y el perla negra se vengan del holandes
 escena5 = barcoAbordaOtroBarco escena4 holandesErrante

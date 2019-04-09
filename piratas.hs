@@ -134,12 +134,11 @@ data Ciudad = Ciudad {
     tesoros :: [Tesoro]
 } deriving (Show)
 
+_saquear :: (Tesoro -> Bool) -> Pirata -> Tesoro -> Pirata
+_saquear formaDeSaquear pirata tesoro = saquear pirata formaDeSaquear tesoro
+
 piratasSaqueanTesoros :: (Tesoro -> Bool) -> [Pirata] -> [Tesoro] -> [Pirata]
-piratasSaqueanTesoros formaDeSaquear [] [] = []
-piratasSaqueanTesoros formaDeSaquear [] (tesoro:restoTesoros) = []
-piratasSaqueanTesoros formaDeSaquear (pirata:restoPiratas) [] = []
-piratasSaqueanTesoros formaDeSaquear (pirata:restoPiratas) (tesoro:restoTesoros) 
-        = saquear pirata formaDeSaquear tesoro : piratasSaqueanTesoros formaDeSaquear restoPiratas restoTesoros
+piratasSaqueanTesoros formaDeSaquear piratas tesoros = zipWith (_saquear formaDeSaquear) piratas tesoros
 
 barcoSaqueaCiudad :: Barco -> Ciudad -> Barco
 barcoSaqueaCiudad barco ciudad = barco { tripulacion = piratasSaqueanTesoros (formaDeSaquear barco) (tripulacion barco) (tesoros ciudad) }

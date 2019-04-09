@@ -219,3 +219,20 @@ ejemploEscena3 = anclarEnIslaDeshabitada holandesErrante islaTortuga
 ejemploEscena4 = barcoSaqueaCiudad ejemploEscena3 carmenPatagones
 --El Perla Negra aborda al Holandes Errante
 ejemploEscena5 = barcoAbordaOtroBarco ejemploEscena2 ejemploEscena4
+
+------Pelicula
+
+-- jackSparrow se une al perla negra
+escena1 = barcoIncorporaTripulante perlaNegra jackSparrow
+
+-- el perla negra desembarca en una isla desierta
+escena2 = anclarEnIslaDeshabitada escena1 islaTortuga
+
+-- elholandes errante ve el perla negra anclado y lo ataca
+escena3 = barcoAbordaOtroBarco holandesErrante escena2
+
+-- el perla negra ataca portRoyal para recuperar tesoros
+escena4 = barcoSaqueaCiudad perlaNegra portRoyal
+
+-- Jack Sparrow y el perla negra se vengan del holandes
+escena5 = barcoAbordaOtroBarco escena4 holandesErrante

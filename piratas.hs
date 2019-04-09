@@ -160,9 +160,7 @@ piratasRobanTesorosValiosos :: [Pirata] -> [Pirata] -> [Pirata]
 piratasRobanTesorosValiosos piratas piratasRobados = zipWith robarTesorosValiosos piratas piratasRobados ++ drop (length piratasRobados) piratas
 
 piratasPierdenTesorosValiosos :: [Pirata] -> [Pirata]
-piratasPierdenTesorosValiosos [] = []
-piratasPierdenTesorosValiosos (pirata:restoPiratas)
-        = pirataPierdeTesorosValiosos pirata : piratasPierdenTesorosValiosos restoPiratas
+piratasPierdenTesorosValiosos piratas = map pirataPierdeTesorosValiosos piratas
 
 barcoAbordaOtroBarco :: Barco -> Barco -> Barco
 barcoAbordaOtroBarco barco barcoAbordado = barco { tripulacion = piratasRobanTesorosValiosos (tripulacion barco) (tripulacion barcoAbordado)}

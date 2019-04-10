@@ -41,17 +41,10 @@ mismosTesorosDistintoValorEnOtroBotin tesoros1 tesoros2 = any (mismoTesoroDistin
 pirataConMismoTesoroDistintoValorQueOtroPirata :: Pirata -> Pirata -> Bool
 pirataConMismoTesoroDistintoValorQueOtroPirata pirata1 pirata2 = mismosTesorosDistintoValorEnOtroBotin (botin pirata1) (botin pirata2)
 
---esta de mas
-piratasConMismoTesoroDistintoValor :: [Pirata] -> Bool
-piratasConMismoTesoroDistintoValor [] = False
-piratasConMismoTesoroDistintoValor (pirata:piratas)
-    | any (pirataConMismoTesoroDistintoValorQueOtroPirata pirata) piratas = True
-    | otherwise = piratasConMismoTesoroDistintoValor piratas
-
 -- El valor del tesoro más valioso de un pirata.
 
 tesoroMasValiosoDeUnPirata :: Pirata -> Double
-tesoroMasValiosoDeUnPirata pirata = maximum (valoresTesorosPirata pirata)
+tesoroMasValiosoDeUnPirata = maximum.valoresTesorosPirata
 
 -- Como queda el pirata luego de adquirir un nuevo tesoro
 pirataAdquiereNuevoTesoro :: Tesoro ->  Pirata -> Pirata
@@ -59,7 +52,7 @@ pirataAdquiereNuevoTesoro tesoro pirata = pirata {botin = tesoro:(botin pirata)}
 
 -- Como queda el pirata luego de perder todos los tesoros valiosos, que son los que tienen un valor mayor a 100
 tesoroEsValioso :: Tesoro -> Bool
-tesoroEsValioso tesoro = valor tesoro >= 100
+tesoroEsValioso = (>=100).valor
 
 tesorosNoValiosos :: [Tesoro] -> [Tesoro]
 tesorosNoValiosos = filter (not.tesoroEsValioso)
@@ -91,18 +84,19 @@ noSaqueaTesoro :: Tesoro -> Bool
 noSaqueaTesoro tesoro = False
 
 -- Existe una forma más compleja que consiste en una conjunción de las anteriores. Esto significa que se quedan con los tesoros que cumplan al menos una de entre un conjunto de maneras se saquear.
-tesoroEsSaqueable :: [(Tesoro -> Bool)] -> Tesoro -> Bool
-tesoroEsSaqueable formasDeSaquear tesoro = any($tesoro) formasDeSaquear
-
---saquearOro :: Tesoro -> Bool
---saquearOro = tesoroConNombre "oro" 
-
---saquearValiosoYSombrero :: Tesoro -> Bool
---saquearValiosoYSombrero = tesoroEsSaqueable [tesoroEsValioso, tesoroConNombre "sombrero"]
 
 type FormaDeSaqueo = Tesoro -> Bool 
 
-saquear :: Pirata -> (Tesoro -> Bool) -> Tesoro -> Pirata
+tesoroEsSaqueable :: [FormaDeSaqueo] -> Tesoro -> Bool
+tesoroEsSaqueable formasDeSaquear tesoro = any($tesoro) formasDeSaquear
+
+saquearOro :: Tesoro -> Bool
+saquearOro = tesoroConNombre "oro" 
+
+saquearValiosoYSombrero :: Tesoro -> Bool
+saquearValiosoYSombrero = tesoroEsSaqueable [tesoroEsValioso, tesoroConNombre "sombrero"]
+
+saquear :: Pirata -> FormaDeSaqueo -> Tesoro -> Pirata
 saquear pirata formaDeSaquear tesoro
         | formaDeSaquear tesoro = pirataAdquiereNuevoTesoro tesoro pirata
         | otherwise = pirata
@@ -112,7 +106,7 @@ saquear pirata formaDeSaquear tesoro
 data Barco = Barco {
     nombreBarco :: String,
     tripulacion :: [Pirata],
-    formaDeSaquear :: Tesoro -> Bool
+    formaDeSaquear :: FormaDeSaqueo
 } deriving (Show)
 
 --Un pirata se incorpora a la tripulación de un barco

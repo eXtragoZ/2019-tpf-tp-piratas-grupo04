@@ -90,12 +90,6 @@ type FormaDeSaqueo = Tesoro -> Bool
 tesoroEsSaqueable :: [FormaDeSaqueo] -> Tesoro -> Bool
 tesoroEsSaqueable formasDeSaquear tesoro = any($tesoro) formasDeSaquear
 
-saquearOro :: Tesoro -> Bool
-saquearOro = tesoroConNombre "oro" 
-
-saquearValiosoYSombrero :: Tesoro -> Bool
-saquearValiosoYSombrero = tesoroEsSaqueable [tesoroEsValioso, tesoroConNombre "sombrero"]
-
 saquear :: Pirata -> FormaDeSaqueo -> Tesoro -> Pirata
 saquear pirata formaDeSaquear tesoro
         | formaDeSaquear tesoro = pirataAdquiereNuevoTesoro tesoro pirata
@@ -193,7 +187,7 @@ anneBonny = Pirata "Anne Bonny" [doblones, frascoArena2]
 elizabethSwann = Pirata "Elizabeth Swann" [moneda, espada]
 willTurner = Pirata "Will Turner" [cuchillo]
 
-perlaNegra = Barco "Perla Negra" [jackSparrow, anneBonny, elizabethSwann, willTurner] saquearValiosoYSombrero
+perlaNegra = Barco "Perla Negra" [jackSparrow, anneBonny, elizabethSwann, willTurner] (tesoroEsSaqueable [tesoroEsValioso, tesoroConNombre "sombrero"])
 
 davidJones = Pirata "David Jones" [cajitaMusical, oro, sombrero]
 maccus = Pirata "Maccus" [frascoArena]
@@ -202,7 +196,7 @@ jimmyLegs = Pirata "Jimmy Legs" [botellaRon]
 koleniko = Pirata "Koleniko" [espada]
 palifico = Pirata "Palifico" [frascoArena]
 
-holandesErrante = Barco "Holandes Errante" [davidJones, maccus, clacker, jimmyLegs, koleniko, palifico] saquearOro 
+holandesErrante = Barco "Holandes Errante" [davidJones, maccus, clacker, jimmyLegs, koleniko, palifico] (tesoroConNombre "oro") 
 
 islaTortuga = Isla "Isla Tortuga" frascoArena2
 islaDelRon = Isla "Isla del Ron" botellaRon
@@ -210,31 +204,27 @@ islaDelRon = Isla "Isla del Ron" botellaRon
 portRoyal = Ciudad "Port Royal" [joyas, bolsonMoneda, joyas2, espada, bolsonMoneda2, joyas, joyas2]
 carmenPatagones = Ciudad "Carmen de Patagones" [espada, oro, oro, oro]
 
-------Pelicula ejemplo:
-
---La tripulación del Perla Negra desembarca en la IslaDelRon y todos se llevan una botella.
-ejemploEscena1 = anclarEnIslaDeshabitada perlaNegra islaDelRon
---El Perla Negra ataca Port Royal, donde hay muchos tesoros.
-ejemploEscena2 = barcoSaqueaCiudad ejemploEscena1 portRoyal
---El Holandes Errante pasa por la Isla Tortuga y luego hace un largo viaje para atacar Carmen de Patagones, donde hay pocos tesoros.
-ejemploEscena3 = anclarEnIslaDeshabitada holandesErrante islaTortuga
-ejemploEscena4 = barcoSaqueaCiudad ejemploEscena3 carmenPatagones
---El Perla Negra aborda al Holandes Errante
-ejemploEscena5 = barcoAbordaOtroBarco ejemploEscena2 ejemploEscena4
-
 ------Pelicula
 
 -- jackSparrow se une al perla negra
-escena1 = barcoIncorporaTripulante perlaNegra jackSparrow
+escena1 :: Barco -> Pirata -> Barco
+escena1 barco pirata = barcoIncorporaTripulante barco pirata
 
 -- el perla negra desembarca en una isla desierta
-escena2 = anclarEnIslaDeshabitada escena1 islaTortuga
+escena2 :: Barco -> Isla -> Pirata -> Barco
+escena2 barco1 isla pirata = anclarEnIslaDeshabitada (escena1 barco1 pirata) isla
 
 -- elholandes errante ve el perla negra anclado y lo ataca
-escena3 = barcoAbordadoPorOtro escena2 holandesErrante
+escena3 :: Barco -> Barco -> Isla -> Pirata -> Barco
+escena3 barco1 barco2 isla pirata = barcoAbordadoPorOtro (escena2 barco1 isla pirata) barco2
 
 -- el perla negra ataca portRoyal para recuperar tesoros
-escena4 = barcoSaqueaCiudad escena3 portRoyal
+escena4 :: Barco -> Barco -> Ciudad -> Isla -> Pirata -> Barco
+escena4 barco1 barco2 ciudad isla pirata = barcoSaqueaCiudad (escena3 barco1 barco2 isla pirata) ciudad
 
 -- Jack Sparrow y el perla negra se vengan del holandes
-escena5 = barcoAbordaOtroBarco escena4 holandesErrante
+escena5 :: Barco -> Barco -> Ciudad -> Isla -> Pirata -> Barco
+escena5 barco1 barco2 ciudad isla pirata = barcoAbordaOtroBarco (escena4 barco1 barco2 ciudad isla pirata) barco2
+
+pelicula :: Barco -> Barco -> Ciudad -> Isla -> Pirata -> Barco
+pelicula barco1 barco2 ciudad isla pirata = escena5 barco1 barco2 ciudad isla pirata

@@ -15,19 +15,18 @@ data Tesoro =
     cotizaciones :: [Double] }|
   LeLiq {
     importeNominal :: Double,
-    pais :: Pais  } -- deriving Eq
+    pais :: Pais  } deriving Show
 
-instance Show Tesoro where
-  show (UnTesoro nombreTesoro valor) = show nombreTesoro ++ " " ++ show valor
-  show (BonoDefault cotizaciones) = "Bono" ++ " " ++ show (valorDeCotizaciones cotizaciones)
-  show (LeLiq imp pais) = "Leliq" ++ " " ++ (nombrePais pais) ++ " " ++ show (valorDeLeLiq imp pais)
-
-class ValorTesoro a where
+class InstanciaTesoro a where
+  nombreDeTesoro :: a -> String
   valorTesoro :: a -> Double
 
-instance ValorTesoro Tesoro where
+instance InstanciaTesoro Tesoro where
+  nombreDeTesoro (UnTesoro nombre _) = nombre
+  nombreDeTesoro (BonoDefault _) = "Bono"
+  nombreDeTesoro (LeLiq _ pais) = "Leliq" ++ " " ++ (nombrePais pais)
   valorTesoro (UnTesoro _ valor) = valor
-  valorTesoro (BonoDefault cotizaciones) = (maximum cotizaciones - minimum cotizaciones) * 1.5
+  valorTesoro (BonoDefault cotizaciones) = valorDeCotizaciones cotizaciones
   valorTesoro (LeLiq imp pais) = valorDeLeLiq imp pais
 
 valorDeCotizaciones :: [Double] -> Double
@@ -83,8 +82,8 @@ pirataAdquiereNuevoTesoro :: Tesoro ->  Pirata -> Pirata
 pirataAdquiereNuevoTesoro tesoro pirata = pirata {botin = tesoro:(botin pirata)}
 
 -- Como queda el pirata luego de perder todos los tesoros valiosos, que son los que tienen un valor mayor a 100
-tesoroEsValioso :: Tesoro -> Bool
-tesoroEsValioso = (>=100).valorTesoro
+--tesoroEsValioso :: Tesoro -> Bool
+--tesoroEsValioso = (>=100).valorTesoro
 
 tesorosNoValiosos :: [Tesoro] -> [Tesoro]
 tesorosNoValiosos = filter (not.tesoroEsValioso)
@@ -93,8 +92,8 @@ pirataPierdeTesorosValiosos :: Pirata -> Pirata
 pirataPierdeTesorosValiosos pirata = pirata {botin = tesorosNoValiosos (botin pirata)}
 
 -- Como queda el pirata luego de perder todos los tesoros con un nombre dado
-tesoroConNombre :: String -> Tesoro -> Bool
-tesoroConNombre nombre tesoro = (nombreTesoro tesoro) == nombre
+--tesoroConNombre :: String -> Tesoro -> Bool
+--tesoroConNombre nombre tesoro = (nombreDeTesoro tesoro) == nombre
 
 tesoroNoCondiceConNombre :: [Tesoro] -> String -> [Tesoro]
 tesoroNoCondiceConNombre tesoros nombre = filter (not.(tesoroConNombre nombre)) tesoros
@@ -112,20 +111,36 @@ pirataPierdeTesorosConNombre pirata nombre = pirata {botin = (tesoroNoCondiceCon
 -- tesoroConNombre :: String -> Tesoro -> Bool
 
 -- Existen los piratas con corazón que no saquean nada.
-noSaqueaTesoro :: Tesoro -> Bool
-noSaqueaTesoro tesoro = False
+-- noSaqueaTesoro :: Tesoro -> Bool
+-- noSaqueaTesoro tesoro = False
 
 -- Existe una forma más compleja que consiste en una conjunción de las anteriores. Esto significa que se quedan con los tesoros que cumplan al menos una de entre un conjunto de maneras se saquear.
 
 type FormaDeSaqueo = Tesoro -> Bool 
 
-tesoroEsSaqueable :: [FormaDeSaqueo] -> Tesoro -> Bool
-tesoroEsSaqueable formasDeSaquear tesoro = any($tesoro) formasDeSaquear
+--tesoroEsSaqueable :: [FormaDeSaqueo] -> Tesoro -> Bool
+--tesoroEsSaqueable formasDeSaquear tesoro = any($tesoro) formasDeSaquear
 
-saquear :: Pirata -> FormaDeSaqueo -> Tesoro -> Pirata
-saquear pirata formaDeSaquear tesoro
-        | formaDeSaquear tesoro = pirataAdquiereNuevoTesoro tesoro pirata
-        | otherwise = pirata
+class Saqueador a where
+  tesoroEsValioso :: a -> Bool
+  tesoroConNombre :: String -> a -> Bool
+  noSaqueaTesoro :: a -> Bool
+  tesoroEsSaqueable :: [FormaDeSaqueo] -> a -> Bool
+  saqueoBuitre :: a -> Bool
+  saqueoFobico :: String -> a -> Bool
+  saquear :: Pirata -> FormaDeSaqueo -> a -> Pirata
+
+instance Saqueador Tesoro where
+  tesoroEsValioso = (>=100).valorTesoro
+  tesoroConNombre nombre tesoro = (nombreDeTesoro tesoro) == nombre
+  noSaqueaTesoro _ = False
+  tesoroEsSaqueable formasDeSaquear tesoro = any($tesoro) formasDeSaquear
+  saqueoBuitre (BonoDefault _) = True
+  saqueoBuitre _ = False
+  saqueoFobico nombre = not.(tesoroConNombre nombre)
+  saquear pirata formaDeSaquear tesoro
+          | formaDeSaquear tesoro = pirataAdquiereNuevoTesoro tesoro pirata
+          | otherwise = pirata
 
 -- Navegando los siete mares
 
@@ -195,6 +210,18 @@ barcoAbordadoPorOtro barcoAbordado barco = barcoAbordado { tripulacion = piratas
 
 abordamientoDeBarcoEnAltaMar :: Barco -> Barco -> (Barco,Barco)
 abordamientoDeBarcoEnAltaMar barco barcoAbordado = (barcoAbordaOtroBarco barco barcoAbordado,barcoAbordadoPorOtro barcoAbordado barco)
+
+-- Universidad Pirata
+
+data TipoUniversidad = AntiDictaminante | BuitreAlternativa | AtlanticaInofensiva
+
+class UniversidadPirata a where
+  desarrollarSaqueo :: a -> Barco -> Barco
+
+instance UniversidadPirata TipoUniversidad where
+  desarrollarSaqueo AntiDictaminante barco = barco --{  formaDeSaquear = (not formaDeSaquear)}
+  desarrollarSaqueo BuitreAlternativa barco = barco { formaDeSaquear = (tesoroEsSaqueable ([(formaDeSaquear barco)] ++ [saqueoBuitre, tesoroEsValioso]))}
+  desarrollarSaqueo AtlanticaInofensiva barco = barco
 
 ----- Datos para peliculas:
 

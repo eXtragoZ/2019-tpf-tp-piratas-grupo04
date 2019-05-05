@@ -5,11 +5,43 @@ data Pirata = Pirata {
     botin :: [Tesoro]
 } deriving (Show)
 
-data Tesoro = Tesoro {
-    nombreTesoro :: String,
-    valor :: Double
-} deriving (Show)
+-- Tesoros
 
+data Tesoro = 
+  UnTesoro {
+      nombreTesoro :: String,
+      valor :: Double }|
+  BonoDefault {
+    cotizaciones :: [Double] }|
+  LeLiq {
+    importeNominal :: Double,
+    pais :: Pais  } -- deriving Eq
+
+instance Show Tesoro where
+  show (UnTesoro nombreTesoro valor) = show nombreTesoro ++ " " ++ show valor
+  show (BonoDefault cotizaciones) = "Bono" ++ " " ++ show (valorDeCotizaciones cotizaciones)
+  show (LeLiq imp pais) = "Leliq" ++ " " ++ (nombrePais pais) ++ " " ++ show (valorDeLeLiq imp pais)
+
+class ValorTesoro a where
+  valorTesoro :: a -> Double
+
+instance ValorTesoro Tesoro where
+  valorTesoro (UnTesoro _ valor) = valor
+  valorTesoro (BonoDefault cotizaciones) = (maximum cotizaciones - minimum cotizaciones) * 1.5
+  valorTesoro (LeLiq imp pais) = valorDeLeLiq imp pais
+
+valorDeCotizaciones :: [Double] -> Double
+valorDeCotizaciones cotizaciones = (maximum cotizaciones - minimum cotizaciones) * 1.5
+
+valorDeLeLiq :: Double -> Pais -> Double
+valorDeLeLiq imp pais = imp * (obtenerTasa (tasaPais pais))
+
+obtenerTasa :: Double -> Double
+obtenerTasa tasa = (tasa / 100) + 1
+
+data Pais = Pais {
+  nombrePais :: String,
+  tasaPais :: Double } deriving (Show)
 -- La cantidad de tesoros de un pirata
 
 cantidadTesorosPirata :: Pirata -> Int
@@ -17,7 +49,7 @@ cantidadTesorosPirata = length.botin
 -- length.botin
 
 valoresTesorosPirata :: Pirata -> [Double]
-valoresTesorosPirata pirata = map valor (botin pirata)
+valoresTesorosPirata pirata = map valorTesoro (botin pirata)
 
 valorTotalTesoros :: Pirata -> Double
 valorTotalTesoros = sum.valoresTesorosPirata --pirata = sum (valoresTesorosPirata pirata)
@@ -52,7 +84,7 @@ pirataAdquiereNuevoTesoro tesoro pirata = pirata {botin = tesoro:(botin pirata)}
 
 -- Como queda el pirata luego de perder todos los tesoros valiosos, que son los que tienen un valor mayor a 100
 tesoroEsValioso :: Tesoro -> Bool
-tesoroEsValioso = (>=100).valor
+tesoroEsValioso = (>=100).valorTesoro
 
 tesorosNoValiosos :: [Tesoro] -> [Tesoro]
 tesorosNoValiosos = filter (not.tesoroEsValioso)
@@ -166,21 +198,27 @@ abordamientoDeBarcoEnAltaMar barco barcoAbordado = (barcoAbordaOtroBarco barco b
 
 ----- Datos para peliculas:
 
-frascoArena = Tesoro "frasco de arena" 0
-brujula = Tesoro "Brujula que apunta a lo que mas deseas" 10000
-cajitaMusical = Tesoro "Cajita musical" 1
-doblones = Tesoro "Doblones" 100
-frascoArena2 = Tesoro "frasco de arena" 1
-oro = Tesoro "oro" 100
-sombrero = Tesoro "sombrero" 20
-moneda = Tesoro "moneda del cofre muerto" 100
-espada = Tesoro "espada de hierro" 50
-cuchillo = Tesoro "cuchillo del padre" 5
-botellaRon = Tesoro "Botella de Ron" 25
-joyas = Tesoro "Set de joyas" 175
-joyas2 = Tesoro "Set de joyas" 150
-bolsonMoneda = Tesoro "Bolson de monedas" 110
-bolsonMoneda2 = Tesoro "Bolson de monedas" 120
+frascoArena = UnTesoro "frasco de arena" 0
+brujula = UnTesoro "Brujula que apunta a lo que mas deseas" 10000
+cajitaMusical = UnTesoro "Cajita musical" 1
+doblones = UnTesoro "Doblones" 100
+frascoArena2 = UnTesoro "frasco de arena" 1
+oro = UnTesoro "oro" 100
+sombrero = UnTesoro "sombrero" 20
+moneda = UnTesoro "moneda del cofre muerto" 100
+espada = UnTesoro "espada de hierro" 50
+cuchillo = UnTesoro "cuchillo del padre" 5
+botellaRon = UnTesoro "Botella de Ron" 25
+joyas = UnTesoro "Set de joyas" 175
+joyas2 = UnTesoro "Set de joyas" 150
+bolsonMoneda = UnTesoro "Bolson de monedas" 110
+bolsonMoneda2 = UnTesoro "Bolson de monedas" 120
+
+bono = BonoDefault [100,20,36,42]
+
+argentina = Pais "Argentina" 74.00
+
+leliq = LeLiq 100 argentina
 
 jackSparrow = Pirata "Jack Sparrow" [frascoArena, brujula]
 anneBonny = Pirata "Anne Bonny" [doblones, frascoArena2]

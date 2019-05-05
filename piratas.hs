@@ -128,6 +128,7 @@ class Saqueador a where
   tesoroEsSaqueable :: [FormaDeSaqueo] -> a -> Bool
   saqueoBuitre :: a -> Bool
   saqueoFobico :: String -> a -> Bool
+  saquear :: Pirata -> FormaDeSaqueo -> a -> Pirata
 
 instance Saqueador Tesoro where
   tesoroEsValioso = (>=100).valorTesoro
@@ -137,11 +138,9 @@ instance Saqueador Tesoro where
   saqueoBuitre (BonoDefault _) = True
   saqueoBuitre _ = False
   saqueoFobico nombre = not.(tesoroConNombre nombre)
-
-saquear :: Pirata -> FormaDeSaqueo -> Tesoro -> Pirata
-saquear pirata formaDeSaquear tesoro
-        | formaDeSaquear tesoro = pirataAdquiereNuevoTesoro tesoro pirata
-        | otherwise = pirata
+  saquear pirata formaDeSaquear tesoro
+          | formaDeSaquear tesoro = pirataAdquiereNuevoTesoro tesoro pirata
+          | otherwise = pirata
 
 -- Navegando los siete mares
 

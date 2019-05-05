@@ -159,10 +159,10 @@ data Ciudad = Ciudad {
     tesoros :: [Tesoro]
 } deriving (Show)
 
-_saquear :: (Tesoro -> Bool) -> Pirata -> Tesoro -> Pirata
+_saquear :: FormaDeSaqueo -> Pirata -> Tesoro -> Pirata
 _saquear formaDeSaquear pirata tesoro = saquear pirata formaDeSaquear tesoro
 
-piratasSaqueanTesoros :: (Tesoro -> Bool) -> [Pirata] -> [Tesoro] -> [Pirata]
+piratasSaqueanTesoros :: FormaDeSaqueo -> [Pirata] -> [Tesoro] -> [Pirata]
 piratasSaqueanTesoros formaDeSaquear piratas tesoros = zipWith (_saquear formaDeSaquear) piratas tesoros
 
 barcoSaqueaCiudad :: Barco -> Ciudad -> Barco
@@ -266,3 +266,20 @@ escena5 barco1 barco2 ciudad isla pirata = barcoAbordaOtroBarco (escena4 barco1 
 
 pelicula :: Barco -> Barco -> Ciudad -> Isla -> Pirata -> Barco
 pelicula barco1 barco2 ciudad isla pirata = escena5 barco1 barco2 ciudad isla pirata
+
+------- Historias de los barcos:
+
+type Situacion = Barco -> Barco
+
+situacionWillSubeAlBarco :: Situacion
+situacionWillSubeAlBarco barco = barcoIncorporaTripulante barco willTurner
+
+situacionBarcoAbordaAlHolandesErrante :: Situacion
+situacionBarcoAbordaAlHolandesErrante barco = barcoAbordaOtroBarco barco holandesErrante
+
+situacionBarcoAtacaPortRoyale :: Situacion
+situacionBarcoAtacaPortRoyale barco = barcoSaqueaCiudad barco portRoyal
+
+historiaDelBarco :: Barco -> [Situacion] -> Barco
+historiaDelBarco = foldl (\a b -> b a)
+

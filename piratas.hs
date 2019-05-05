@@ -211,6 +211,18 @@ barcoAbordadoPorOtro barcoAbordado barco = barcoAbordado { tripulacion = piratas
 abordamientoDeBarcoEnAltaMar :: Barco -> Barco -> (Barco,Barco)
 abordamientoDeBarcoEnAltaMar barco barcoAbordado = (barcoAbordaOtroBarco barco barcoAbordado,barcoAbordadoPorOtro barcoAbordado barco)
 
+-- Universidad Pirata
+
+data TipoUniversidad = AntiDictaminante | BuitreAlternativa | AtlanticaInofensiva
+
+class UniversidadPirata a where
+  desarrollarSaqueo :: a -> Barco -> Barco
+
+instance UniversidadPirata TipoUniversidad where
+  desarrollarSaqueo AntiDictaminante barco = barco --{  formaDeSaquear = (not formaDeSaquear)}
+  desarrollarSaqueo BuitreAlternativa barco = barco { formaDeSaquear = (tesoroEsSaqueable ([(formaDeSaquear barco)] ++ [saqueoBuitre, tesoroEsValioso]))}
+  desarrollarSaqueo AtlanticaInofensiva barco = barco
+
 ----- Datos para peliculas:
 
 frascoArena = UnTesoro "frasco de arena" 0

@@ -341,5 +341,16 @@ barcoConHistoriaConTripulacionMasNumerosa barcos situaciones = barcoConTripulaci
 -- Proliferación de piratas
 
 obtenerBarcoConTripulacionInfinita :: Barco
-obtenerBarcoConTripulacionInfinita = Barco "NombreBarco" (repeat (Pirata "Nombre pirata" [moneda])) (tesoroConNombre "oro") 
+obtenerBarcoConTripulacionInfinita = Barco "NombreBarco" infinitosPiratas (tesoroConNombre "oro") 
+
+infinitosPiratas :: [Pirata]
+infinitosPiratas = (repeat (Pirata "nombre Pirata" [frascoArena]))
+
+-- obtenerNombreDistintoPirata :: String
+-- obtenerNombreDistintoPirata Pirata string [frascoArena]
+
+-- nombresPirata = "a" : map (++"a") nombresPirata
+
+-- piratas = obtenerPirata "a" : map obtenerPirata (++"a")
+
 

@@ -1,4 +1,5 @@
 import Text.Show.Functions
+import Data.List
 
 data Pirata = Pirata {
     nombrePirata :: String,
@@ -156,6 +157,8 @@ data Barco = Barco {
 instance Eq Barco where 
   b1 == b2 = nombreBarco b1 == nombreBarco b2 && (tripulacion b1) == (tripulacion b2)
 
+instance Ord Barco where
+  b1 <= b2 = length (tripulacion b1) <= length (tripulacion b2)
 
 --Un pirata se incorpora a la tripulación de un barco
 barcoIncorporaTripulante :: Barco -> Pirata -> Barco
@@ -320,12 +323,17 @@ situacionBarcoAtacaPortRoyale barco = barcoSaqueaCiudad barco portRoyal
 situacionBarcoAtacaCarmenPatagones :: Situacion
 situacionBarcoAtacaCarmenPatagones barco = barcoSaqueaCiudad barco carmenPatagones
 
-historiaDelBarco :: Barco -> [Situacion] -> Barco
-historiaDelBarco = foldl (\a b -> b a)
+historiaDelBarco :: [Situacion] -> Barco -> Barco
+historiaDelBarco situaciones barco = foldl (\a b -> b a) barco situaciones
 
 esHistoriaInofensiva :: [Situacion] -> Barco -> Bool
-esHistoriaInofensiva situaciones barco = barco == historiaDelBarco barco situaciones 
+esHistoriaInofensiva situaciones barco = barco == historiaDelBarco situaciones barco
 
 barcosConHistoriaInofensiva :: [Barco] -> [Situacion] -> [Barco]
 barcosConHistoriaInofensiva barcos situaciones = filter (esHistoriaInofensiva situaciones) barcos
 
+barcoConTripulacionMasNumerosa :: [Barco] -> Barco
+barcoConTripulacionMasNumerosa barcos = last (sort barcos)
+
+barcoConHistoriaConTripulacionMasNumerosa :: [Barco] -> [Situacion] -> Barco
+barcoConHistoriaConTripulacionMasNumerosa barcos situaciones = barcoConTripulacionMasNumerosa (map (historiaDelBarco situaciones) barcos)

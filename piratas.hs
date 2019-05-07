@@ -338,7 +338,7 @@ obtenerBarcoConTripulacionInfinita :: Barco
 obtenerBarcoConTripulacionInfinita = Barco "NombreBarco" (map inventarPirata [1.00..]) (tesoroConNombre "oro") 
 
 inventarPirata :: Double -> Pirata
-inventarPirata valor = (Pirata "nombre Pirata" [UnTesoro "tesoro" valor])
+inventarPirata valor = (Pirata ("nombre Pirata" ++ show valor) [UnTesoro "tesoro" valor])
 
 --main = do 
 --  putStrLn "TP"

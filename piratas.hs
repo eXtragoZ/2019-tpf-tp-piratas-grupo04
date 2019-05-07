@@ -307,7 +307,7 @@ instance UniversidadPirata TipoUniversidad where
   desarrollarSaqueo BuitreAlternativa barco = barco { formaDeSaquear = (tesoroEsSaqueable ([(formaDeSaquear barco)] ++ [saqueoBuitre, tesoroEsValioso]))}
   desarrollarSaqueo AtlanticaInofensiva barco = barco
 
-------- Historias de los barcos:
+-- Historias de los barcos
 
 type Situacion = Barco -> Barco
 
@@ -337,3 +337,9 @@ barcoConTripulacionMasNumerosa barcos = last (sort barcos)
 
 barcoConHistoriaConTripulacionMasNumerosa :: [Barco] -> [Situacion] -> Barco
 barcoConHistoriaConTripulacionMasNumerosa barcos situaciones = barcoConTripulacionMasNumerosa (map (historiaDelBarco situaciones) barcos)
+
+-- Proliferación de piratas
+
+obtenerBarcoConTripulacionInfinita :: Barco
+obtenerBarcoConTripulacionInfinita = Barco "NombreBarco" (repeat (Pirata "Nombre pirata" [moneda])) (tesoroConNombre "oro") 
+

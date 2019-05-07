@@ -5,6 +5,9 @@ data Pirata = Pirata {
     botin :: [Tesoro]
 } deriving (Show)
 
+instance Eq Pirata where 
+  p1 == p2 = nombrePirata p1 == nombrePirata p2
+
 -- Tesoros
 
 data Tesoro = 
@@ -150,9 +153,15 @@ data Barco = Barco {
     formaDeSaquear :: FormaDeSaqueo
 } deriving (Show)
 
+instance Eq Barco where 
+  b1 == b2 = nombreBarco b1 == nombreBarco b2 && (tripulacion b1) == (tripulacion b2)
+
+
 --Un pirata se incorpora a la tripulación de un barco
 barcoIncorporaTripulante :: Barco -> Pirata -> Barco
-barcoIncorporaTripulante barco pirata = barco {tripulacion = pirata:(tripulacion barco)}
+barcoIncorporaTripulante barco pirata 
+    | elem pirata (tripulacion barco) = barco
+    | otherwise = barco {tripulacion = pirata:(tripulacion barco)}
 
 --Un pirata abandona la tripulación de un barco
 barcoAbandonaTripulante :: Barco -> Pirata -> Barco
@@ -308,6 +317,15 @@ situacionBarcoAbordaAlHolandesErrante barco = barcoAbordaOtroBarco barco holande
 situacionBarcoAtacaPortRoyale :: Situacion
 situacionBarcoAtacaPortRoyale barco = barcoSaqueaCiudad barco portRoyal
 
+situacionBarcoAtacaCarmenPatagones :: Situacion
+situacionBarcoAtacaCarmenPatagones barco = barcoSaqueaCiudad barco carmenPatagones
+
 historiaDelBarco :: Barco -> [Situacion] -> Barco
 historiaDelBarco = foldl (\a b -> b a)
+
+esHistoriaInofensiva :: [Situacion] -> Barco -> Bool
+esHistoriaInofensiva situaciones barco = barco == historiaDelBarco barco situaciones 
+
+barcosConHistoriaInofensiva :: [Barco] -> [Situacion] -> [Barco]
+barcosConHistoriaInofensiva barcos situaciones = filter (esHistoriaInofensiva situaciones) barcos
 
